@@ -1,5 +1,5 @@
 import common.BaseThread;
-
+import java.util.*;
 /**
  * Class Philosopher.
  * Outlines main subrutines of our virtual philosopher.
@@ -15,22 +15,25 @@ public class Philosopher extends BaseThread
 
 	/**
 	 * The act of eating.
-	 * - Print the fact that a given phil (their TID) has started eating.
+	 * - Print the fact that a given phil (their TID) has STARTED eating.
 	 * - yield
 	 * - Then sleep() for a random interval.
 	 * - yield
-	 * - The print that they are done eating.
+	 * - The print that they are DONE eating.
 	 */
 	public void eat()
 	{
 		try
 		{
-			System.out.println("Philosopher "+ this.iTID+" has started eating");
+			System.out.println("Philosopher "+ this.iTID+" has STARTED eating");
+			DiningPhilosophers.soMonitor.requestShake(getTID());
+			shake();
+			DiningPhilosophers.soMonitor.endShake(getTID());
 			yield();
-		
+			//PhilSleep();
 			sleep((long)(Math.random() * TIME_TO_WASTE));
 			yield();
-			System.out.println("Philosopher "+ this.iTID+" is done eating");
+			System.out.println("Philosopher "+ this.iTID+" is DONE eating");
 			// ...
 		}
 		catch(InterruptedException e)
@@ -43,27 +46,29 @@ public class Philosopher extends BaseThread
 
 	/**
 	 * The act of thinking.
-	 * - Print the fact that a given phil (their TID) has started thinking.
+	 * - Print the fact that a given phil (their TID) has STARTED thinking.
 	 * - yield
 	 * - Then sleep() for a random interval.
 	 * - yield
-	 * - The print that they are done thinking.
+	 * - The print that they are DONE thinking.
 	 */
 	public void think()
 	{
 		try
 		{
-			System.out.println("Philosopher "+ this.iTID+" has started thinking");
+			System.out.println("Philosopher "+ this.iTID+" has STARTED thinking");
 			yield();
-		
+			
+			//PhilSleep();
+			
 			sleep((long)(Math.random() * TIME_TO_WASTE));
 			yield();
-			System.out.println("Philosopher "+ this.iTID+" is done thinking");
+			System.out.println("Philosopher "+ this.iTID+" is DONE thinking");
 			// ...
 		}
 		catch(InterruptedException e)
 		{
-			System.err.println("Philosopher.eat():");
+			System.err.println("Philosopher.think():");
 			DiningPhilosophers.reportException(e);
 			System.exit(1);
 		}
@@ -71,20 +76,20 @@ public class Philosopher extends BaseThread
 
 	/**
 	 * The act of talking.
-	 * - Print the fact that a given phil (their TID) has started talking.
+	 * - Print the fact that a given phil (their TID) has STARTED talking.
 	 * - yield
 	 * - Say something brilliant at random
 	 * - yield
-	 * - The print that they are done talking.
+	 * - The print that they are DONE talking.
 	 */
 	public void talk()
 	{
-		System.out.println("Philosopher "+ this.iTID+" has started talking");
+		System.out.println("Philosopher "+ this.iTID+" has STARTED talking");
 		yield();
 
 		saySomething();
 		yield();
-		System.out.println("Philosopher "+ this.iTID+" is done talking");
+		System.out.println("Philosopher "+ this.iTID+" is DONE talking");
 
 		// ...
 	}
@@ -99,20 +104,29 @@ public class Philosopher extends BaseThread
 			DiningPhilosophers.soMonitor.pickUp(getTID());
 
 			eat();
+			
 
 			DiningPhilosophers.soMonitor.putDown(getTID());
 
 			think();
-
+			//DiningPhilosophers.soMonitor.requestSleep(getTID());
+			//PhilSleep();
+			//DiningPhilosophers.soMonitor.endSleep(getTID());
+				
+			
 			/*
 			 * TODO:
 			 * A decision is made at random whether this particular
 			 * philosopher is about to say something terribly useful.
 			 */
-			if(true == false)
-			{
+	
 				// Some monitor ops down here...
+			Random rand = new Random();
+			int talkchance = rand.nextInt(2);
+			if(talkchance ==1 ) {
+				DiningPhilosophers.soMonitor.requestTalk(getTID());
 				talk();
+				DiningPhilosophers.soMonitor.endTalk(getTID());
 				// ...
 			}
 
@@ -140,6 +154,47 @@ public class Philosopher extends BaseThread
 			"Philosopher " + getTID() + " says: " +
 			astrPhrases[(int)(Math.random() * astrPhrases.length)]
 		);
+	}
+	public void PhilSleep()
+    {
+		try
+		{	
+			//DiningPhilosophers.soMonitor.requestSleep(getTID());
+			System.out.println("Philosopher "+ this.iTID+" has STARTED sleeping");
+			yield();
+		
+			sleep((long)(Math.random() * TIME_TO_WASTE));
+			yield();
+			System.out.println("Philosopher "+ this.iTID+" is DONE sleeping");
+			//DiningPhilosophers.soMonitor.endShake(getTID());
+			// ...
+		}
+		catch(InterruptedException e)
+		{
+			System.err.println("Philosopher.sleep():");
+			DiningPhilosophers.reportException(e);
+			System.exit(1);
+		}
+    }
+	public void shake() 
+	{
+		try
+		{
+			System.out.println("Philosopher "+ this.iTID+" has STARTED shaking");
+			yield();
+		
+			sleep((long)(Math.random() * TIME_TO_WASTE));
+			yield();
+			System.out.println("Philosopher "+ this.iTID+" is DONE shaking");
+			// ...
+		}
+		catch(InterruptedException e)
+		{
+			System.err.println("Philosopher.sleep():");
+			DiningPhilosophers.reportException(e);
+			System.exit(1);
+		}
+		
 	}
 }
 
